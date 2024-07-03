@@ -1,0 +1,5 @@
+echo ".gitignore" >> .gitignore
+echo "node_modules/" >> .gitignore
+echo ".env" >> .gitignore
+echo ".vscode/" >> .gitignore
+echo ".local/" >> .gitignore

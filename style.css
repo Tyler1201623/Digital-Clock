@@ -1,0 +1,71 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #292c33;
+    color: white;
+    text-align: center;
+    transition: background-color 1s ease-in-out;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 3em;
+    animation: fadeIn 2s ease-in-out;
+}
+
+#clockDisplay, #dateDisplay {
+    font-size: 3em;
+    margin: 10px;
+    animation: fadeIn 1s ease-in-out;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: #61dafb;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background-color: #21a1f1;
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2em;
+    }
+
+    #clockDisplay, #dateDisplay {
+        font-size: 2em;
+    }
+
+    button {
+        padding: 8px 16px;
+        font-size: 0.8em;
+    }
+}
