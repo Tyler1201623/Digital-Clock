@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Chronos Hub</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --text-primary: #e6e6ff;
+            --accent-primary: #4361ee;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .offline-container {
+            max-width: 500px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--accent-primary), #3f37c9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite alternate;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            background-color: #3f37c9;
+            transform: translateY(-3px);
+        }
+        
+        .cached-features {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        
+        .feature-list {
+            list-style-type: none;
+            margin: 1rem 0;
+        }
+        
+        .feature-list li {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+        }
+        
+        .status {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .time {
+            font-size: 1.2rem;
+            font-family: monospace;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            display: inline-block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            from { text-shadow: 0 0 5px rgba(67, 97, 238, 0.7); }
+            to { text-shadow: 0 0 20px rgba(67, 97, 238, 0.9), 0 0 30px rgba(67, 97, 238, 0.7); }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="icon">⚠️</div>
+        <h1>You're Offline</h1>
+        <div class="time" id="offlineTime">--:--:--</div>
+        <p>Don't worry! Chronos Hub can still help you manage your time while you're offline.</p>
+        
+        <div class="cached-features">
+            <h2>Available Offline:</h2>
+            <ul class="feature-list">
+                <li>Digital Clock (showing local time)</li>
+                <li>Stopwatch</li>
+                <li>Timer</li>
+                <li>Previously set alarms</li>
+                <li>Focus sessions</li>
+            </ul>
+        </div>
+        
+        <button class="btn" id="reloadBtn">Try Reconnecting</button>
+        
+        <p class="status">Chronos Hub will automatically reconnect when you're back online.</p>
+    </div>
+    
+    <script>
+        // Display the current time
+        function updateOfflineTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('offlineTime').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+        
+        // Update time every second
+        setInterval(updateOfflineTime, 1000);
+        updateOfflineTime();
+        
+        // Reload button
+        document.getElementById('reloadBtn').addEventListener('click', () => {
+            window.location.reload();
+        });
+        
+        // Listen for online event
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+    </script>
+</body>
+</html> 

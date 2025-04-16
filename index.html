@@ -1,14 +1,357 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Enhanced Digital Clock</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Time Management</title>
+    <meta name="description" content="Professional time management tools suite">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="images/icon-192x192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Enhanced Digital Clock</h1>
-    <div id="clockDisplay" class="clock"></div>
-    <div id="dateDisplay" class="date"></div>
-    <button id="toggleFormat">Switch to 12-hour format</button>
+    <div class="container">
+        <header class="main-header">
+            <div class="logo">
+                <i class="fas fa-clock"></i>
+                <h1>Time<span>Manager</span></h1>
+            </div>
+            <nav class="main-nav">
+                <button id="toggleTheme" class="nav-btn"><i class="fas fa-moon"></i><span>Theme</span></button>
+                <button id="installPWA" class="nav-btn"><i class="fas fa-download"></i><span>Install</span></button>
+                <button id="notifications" class="nav-btn"><i class="fas fa-bell"></i><span>Notifications</span></button>
+                <button id="settingsButton" class="nav-btn"><i class="fas fa-gear"></i><span>Settings</span></button>
+            </nav>
+        </header>
+
+        <div class="clock-container">
+            <canvas id="analogClock" class="analog-clock" width="200" height="200"></canvas>
+            <div id="clockDisplay" class="clock"></div>
+            <div id="dateDisplay" class="date"></div>
+            <div class="weather">
+                <i class="fas fa-cloud-sun"></i>
+                <div class="weather-temp">--°C</div>
+                <div class="weather-location">Loading...</div>
+            </div>
+            <div id="timezoneDisplay" class="timezone"></div>
+            <div class="clock-controls">
+                <button id="toggleFormat" class="btn"><i class="fas fa-clock"></i> <span>12/24h</span></button>
+                <select id="timezoneSelect" class="dropdown">
+                    <option value="local">Local Time</option>
+                    <option value="UTC">UTC</option>
+                    <option value="EST">Eastern Time</option>
+                    <option value="CST">Central Time</option>
+                    <option value="PST">Pacific Time</option>
+                    <option value="JST">Japan Time</option>
+                    <option value="GMT">Greenwich Mean Time</option>
+                </select>
+                <button id="voiceCommandBtn" class="btn"><i class="fas fa-microphone"></i> <span>Voice</span></button>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature-tabs">
+                <button class="tab-btn active" data-tab="clock"><i class="fas fa-clock"></i> Clock</button>
+                <button class="tab-btn" data-tab="stopwatch"><i class="fas fa-stopwatch"></i> Stopwatch</button>
+                <button class="tab-btn" data-tab="timer"><i class="fas fa-hourglass"></i> Timer</button>
+                <button class="tab-btn" data-tab="alarm"><i class="fas fa-bell"></i> Alarm</button>
+                <button class="tab-btn" data-tab="focus"><i class="fas fa-brain"></i> Focus</button>
+                <button class="tab-btn" data-tab="schedule"><i class="fas fa-calendar"></i> Schedule</button>
+            </div>
+            
+            <div class="tab-content">
+                <div id="clock-tab" class="tab-pane active">
+                    <div class="world-clock">
+                        <h3><i class="fas fa-globe"></i> World Clock</h3>
+                        <div class="world-clock-container" id="worldClockContainer">
+                            <!-- World clocks will be added dynamically -->
+                            <button id="addWorldClock" class="circle-btn"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="stopwatch-tab" class="tab-pane">
+                    <div class="stopwatch-container">
+                        <div id="stopwatch" class="time-display">00:00:00.000</div>
+                        <div class="stopwatch-controls">
+                            <button id="startStopwatch" class="btn"><i class="fas fa-play"></i> Start</button>
+                            <button id="pauseStopwatch" class="btn" disabled><i class="fas fa-pause"></i> Pause</button>
+                            <button id="resetStopwatch" class="btn"><i class="fas fa-undo"></i> Reset</button>
+                            <button id="lapStopwatch" class="btn"><i class="fas fa-flag"></i> Lap</button>
+                        </div>
+                        <div id="laps" class="laps"></div>
+                    </div>
+                </div>
+                
+                <div id="timer-tab" class="tab-pane">
+                    <div class="timer-container">
+                        <div class="timer-presets">
+                            <button class="preset-btn" data-minutes="5">5 min</button>
+                            <button class="preset-btn" data-minutes="10">10 min</button>
+                            <button class="preset-btn" data-minutes="15">15 min</button>
+                            <button class="preset-btn" data-minutes="25">25 min</button>
+                            <button class="preset-btn" data-minutes="30">30 min</button>
+                            <button class="preset-btn" data-minutes="60">60 min</button>
+                        </div>
+                        <div class="timer-setup">
+                            <div class="dial-container">
+                                <div class="dial" id="hoursDial">
+                                    <div class="dial-value">0</div>
+                                    <div class="dial-label">Hours</div>
+                                </div>
+                                <input type="range" id="hoursRange" min="0" max="23" value="0" class="dial-input">
+                            </div>
+                            <div class="dial-container">
+                                <div class="dial" id="minutesDial">
+                                    <div class="dial-value">0</div>
+                                    <div class="dial-label">Minutes</div>
+                                </div>
+                                <input type="range" id="minutesRange" min="0" max="59" value="0" class="dial-input">
+                            </div>
+                            <div class="dial-container">
+                                <div class="dial" id="secondsDial">
+                                    <div class="dial-value">0</div>
+                                    <div class="dial-label">Seconds</div>
+                                </div>
+                                <input type="range" id="secondsRange" min="0" max="59" value="0" class="dial-input">
+                            </div>
+                        </div>
+                        <div id="timerDisplay" class="time-display">00:00:00</div>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="timerProgressBar"></div>
+                        </div>
+                        <div class="timer-controls">
+                            <button id="startTimer" class="btn"><i class="fas fa-play"></i> Start</button>
+                            <button id="pauseTimer" class="btn" disabled><i class="fas fa-pause"></i> Pause</button>
+                            <button id="resetTimer" class="btn"><i class="fas fa-undo"></i> Reset</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="alarm-tab" class="tab-pane">
+                    <div class="alarm-container">
+                        <div class="alarm-setup">
+                            <input type="datetime-local" id="alarmDateTime" class="datetime-input">
+                            <input type="text" id="alarmLabel" placeholder="Alarm label" class="text-input">
+                            <div class="alarm-sound-select">
+                                <select id="alarmSoundSelect" class="dropdown">
+                                    <option value="default">Default Tone</option>
+                                    <option value="gentle">Gentle Rise</option>
+                                    <option value="urgent">Urgent Alert</option>
+                                    <option value="nature">Nature Sounds</option>
+                                </select>
+                                <button id="testAlarmSound" class="btn small-btn"><i class="fas fa-volume-high"></i></button>
+                            </div>
+                            <button id="setAlarm" class="btn primary-btn"><i class="fas fa-bell"></i> Set Alarm</button>
+                        </div>
+                        <h3><i class="fas fa-list"></i> Scheduled Alarms</h3>
+                        <div id="activeAlarms" class="active-alarms"></div>
+                    </div>
+                </div>
+                
+                <div id="focus-tab" class="tab-pane">
+                    <div class="focus-container">
+                        <h3><i class="fas fa-brain"></i> Focus Session</h3>
+                        <div class="focus-modes">
+                            <button class="focus-mode-btn active" data-mode="pomodoro">
+                                <i class="fas fa-tomato"></i>
+                                <span>Pomodoro</span>
+                            </button>
+                            <button class="focus-mode-btn" data-mode="deepwork">
+                                <i class="fas fa-laptop-code"></i>
+                                <span>Deep Work</span>
+                            </button>
+                            <button class="focus-mode-btn" data-mode="meditation">
+                                <i class="fas fa-om"></i>
+                                <span>Meditation</span>
+                            </button>
+                        </div>
+                        <div class="focus-timer">
+                            <div id="focusTimeDisplay" class="time-display">25:00</div>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="focusProgressBar"></div>
+                            </div>
+                            <div class="focus-controls">
+                                <button id="startFocus" class="btn"><i class="fas fa-play"></i> Start</button>
+                                <button id="pauseFocus" class="btn" disabled><i class="fas fa-pause"></i> Pause</button>
+                                <button id="resetFocus" class="btn"><i class="fas fa-undo"></i> Reset</button>
+                            </div>
+                            <div class="focus-session-info">
+                                <div class="focus-stat">
+                                    <div class="focus-stat-value" id="focusSessionCount">0</div>
+                                    <div class="focus-stat-label">Sessions</div>
+                                </div>
+                                <div class="focus-stat">
+                                    <div class="focus-stat-value" id="focusTotalTime">0</div>
+                                    <div class="focus-stat-label">Minutes</div>
+                                </div>
+                                <div class="focus-stat">
+                                    <div class="focus-stat-value" id="focusStreak">0</div>
+                                    <div class="focus-stat-label">Streak</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="schedule-tab" class="tab-pane">
+                    <div class="schedule-container">
+                        <div class="calendar-header">
+                            <button id="prevMonth" class="calendar-nav-btn"><i class="fas fa-chevron-left"></i></button>
+                            <h3 id="currentMonth">January 2023</h3>
+                            <button id="nextMonth" class="calendar-nav-btn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar" id="calendar">
+                            <!-- Calendar will be generated dynamically -->
+                        </div>
+                        <div class="events-list">
+                            <h3 id="selectedDate">Today's Events</h3>
+                            <div id="eventsList">
+                                <!-- Events will be added dynamically -->
+                            </div>
+                            <button id="addEvent" class="btn primary-btn"><i class="fas fa-plus"></i> Add Event</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Made with <i class="fas fa-heart"></i> | <a href="https://github.com/tyler/Digital-Clock" target="_blank"><i class="fab fa-github"></i> GitHub</a></p>
+            <p class="version">v2.0.0</p>
+        </footer>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-gear"></i> Settings</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Appearance</h3>
+                    <div class="setting-item">
+                        <label>Theme</label>
+                        <div class="theme-selector">
+                            <button class="theme-btn" data-theme="dark">Dark</button>
+                            <button class="theme-btn" data-theme="light">Light</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Clock</h3>
+                    <div class="setting-item">
+                        <label>Default Time Format</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="defaultTimeFormat">
+                            <label for="defaultTimeFormat"></label>
+                            <span class="toggle-label">24-hour</span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>Show Seconds</label>
+                        <div class="toggle-switch">
+                            <input type="checkbox" id="showSeconds" checked>
+                            <label for="showSeconds"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Notifications</h3>
+                    <div class="setting-item">
+                        <label>Notification Sound</label>
+                        <select id="notificationSound" class="dropdown">
+                            <option value="default">Default</option>
+                            <option value="subtle">Subtle</option>
+                            <option value="alarm">Alarm</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Notification Volume</label>
+                        <input type="range" id="notificationVolume" min="0" max="100" value="80">
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h3>Data</h3>
+                    <div class="data-actions">
+                        <button id="exportData" class="btn"><i class="fas fa-download"></i> Export Data</button>
+                        <button id="importData" class="btn"><i class="fas fa-upload"></i> Import Data</button>
+                        <button id="clearData" class="btn danger-btn"><i class="fas fa-trash"></i> Clear Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div id="addEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-calendar-plus"></i> Add Event</h2>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventTitle">Event Title</label>
+                        <input type="text" id="eventTitle" required class="text-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDate">Date</label>
+                        <input type="date" id="eventDate" required class="datetime-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Time</label>
+                        <input type="time" id="eventTime" required class="datetime-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventColor">Color</label>
+                        <input type="color" id="eventColor" value="#0d6efd">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventReminder">Reminder</label>
+                        <select id="eventReminder" class="dropdown">
+                            <option value="none">None</option>
+                            <option value="5min">5 minutes before</option>
+                            <option value="15min">15 minutes before</option>
+                            <option value="30min">30 minutes before</option>
+                            <option value="1hour">1 hour before</option>
+                            <option value="1day">1 day before</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancelEvent" class="btn">Cancel</button>
+                        <button type="submit" class="btn primary-btn">Save Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Indicator -->
+    <div id="voiceIndicator" class="voice-indicator">
+        <i class="fas fa-microphone"></i>
+        <div id="voiceText">Listening...</div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Audio elements -->
+    <audio id="alarmSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"></audio>
+    <audio id="tickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-clock-tick-1059.mp3"></audio>
+    <audio id="completionSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+    <audio id="notificationSound" src="https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3"></audio>
+    
+    <!-- Scripts -->
     <script src="main.js"></script>
+    <script src="sw-register.js"></script>
 </body>
 </html>
